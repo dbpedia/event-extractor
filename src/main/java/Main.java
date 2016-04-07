@@ -7,12 +7,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import Annotation.Annotator;
 import crawler.EventCrawler;
 import models.Tree;
 
 public class Main {
 		public static void ser() {
-		EventCrawler e = new EventCrawler("Category:Natural_disasters");
+		EventCrawler e = new EventCrawler("Category:Locust_swarms");
 		e.crawl(false);
 		try(ObjectOutputStream output = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("crawledStuff.ser")))){
 			output.writeObject(e);
@@ -34,10 +35,13 @@ public class Main {
 		return e;
 	}
 	public static void main(String[] args) {
-		ser();
-		//EventCrawler e = deser();
-		//System.out.println(e.getTree());
-		//System.out.println(e.getDocuments());
+		//ser();
+		EventCrawler e = deser();
+		System.out.println(e.getTree());
+		for(models.Document d : e.getDocuments()){
+			Annotator a = new Annotator();
+			System.out.println(a.annotateSpotlight(d.getText()));
+		}
 	}
 
 }

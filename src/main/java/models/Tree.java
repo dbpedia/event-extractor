@@ -23,6 +23,9 @@ public class Tree<T> implements Serializable {
 	public void removeChild(Tree<T> tree){
 		children.remove(tree);
 	}
+	public Tree<T> getParent(){
+		return parent;
+	}
     @Override
     public String toString(){	    	
     	return toStringHelper(0);

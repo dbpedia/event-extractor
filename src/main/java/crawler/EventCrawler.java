@@ -74,7 +74,6 @@ public class EventCrawler implements Serializable{
 			models.Tree first = toVisit.getFirst();
 			if((models.Document)first.getData() != null && !visited.contains(((models.Document)first.getData()).getTitle()) && first.getData() != null && !blacklist.contains(((models.Document)first.getData()).getTitle())){
 				System.out.println("Queuesize: "+toVisit.size()+", Visiting: " +((models.Document)toVisit.getFirst().getData()).getTitle());
-				first.addNode();
 				try {
 					if(!categoryTree && combinelist.contains(((models.Document)first.getData()).getTitle())){
 						category = true;
@@ -82,7 +81,7 @@ public class EventCrawler implements Serializable{
 						category = false;
 					}
 					else if(!combinelist.contains(((models.Document)first.getData()).getTitle())){
-						process(((models.Document)first.getData()).getUrl(), first, categoryTree);				
+						process(((models.Document)first.getData()).getUrl(),first, categoryTree);				
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -154,7 +153,7 @@ public class EventCrawler implements Serializable{
 						if(text != null){
 							models.Document docu = new models.Document(pageTitle, url);
 							docu.setText(text);
-							Tree t = new Tree<models.Document>(docu, parent);
+							Tree t = new Tree<models.Document>(docu, parent.getParent());
 							if(!visited.contains(pageTitle)){
 								t.addNode();
 							}
