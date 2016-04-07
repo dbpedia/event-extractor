@@ -14,5 +14,10 @@
 	<artifactId>json</artifactId>
 	<version>20160212</version>
 </dependency>
+        <dependency>
+            <groupId>de.fuberlin.inf.agcsw.dbpedia</groupId>
+            <artifactId>spotlight-sparql-connector</artifactId>
+            <version>1.0</version>
+        </dependency>
   </dependencies>
 </project>
