@@ -1,0 +1,8 @@
+Category:Heat_waves
+Category:Droughts
+Category:Earthquakes
+Category:Floods
+Category:Landslides
+Category:Wildfires
+Category:Avalanches
+Category:Tsunamis
