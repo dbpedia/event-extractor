@@ -41,7 +41,8 @@ public class Main {
 		System.out.println(e.getTree());
 		for(models.Document d : e.getDocuments()){
 			Annotator a = new Annotator();
-			System.out.println(a.annotateSpotlight(d.getText()));
+			d.setAnnotation(a.annotateSpotlight(d.getText()));
+			d.setFrames(a.annotateFrames(d.getText()));
 		}
 	}
 
