@@ -22,12 +22,12 @@ import models.framenet.Frame;
 public class Annotator {
     private static final String URL_SPOTLIGHT = "http://de.dbpedia.org/spotlight/rest/annotate";
     private static final String URL_SEMVIZ = "http://dbpedia:32790/api/v1/parse";
-    private static final int supportThreshold = 0;
-    private static final double confidenceThreshold = 0.5;
+    private static final int SUPPORT_THRESHOLD = 0;
+    private static final double CONFIDENCE_THRESHOLD = 0.5;
     
 	public SpotlightAnnotation annotateSpotlight(String text){
         SpotlightAnnotator spotlightAnnotator = new SpotlightAnnotator(URL_SPOTLIGHT);
-        SpotlightAnnotation annotation = spotlightAnnotator.annotate(text, supportThreshold, confidenceThreshold);
+        SpotlightAnnotation annotation = spotlightAnnotator.annotate(text, SUPPORT_THRESHOLD, CONFIDENCE_THRESHOLD);
         return annotation;
 	}
 	

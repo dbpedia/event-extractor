@@ -15,7 +15,7 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import models.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -23,11 +23,11 @@ import models.Tree;
 
 public class EventCrawler implements Serializable{
 
-	private ArrayDeque<models.Tree> toVisit = new ArrayDeque<models.Tree>();
-	private ArrayDeque<models.Tree> toVisitCategory = new ArrayDeque<models.Tree>();
+	private ArrayDeque<Tree> toVisit = new ArrayDeque<Tree>();
+	private ArrayDeque<Tree> toVisitCategory = new ArrayDeque<Tree>();
 	private LinkedList<String> visited = new LinkedList<String>();
-	private LinkedList<models.Document> documents = new LinkedList<models.Document>();
-	private Tree<models.Document> tree;
+	private LinkedList<Document> documents = new LinkedList<Document>();
+	private Tree<Document> tree;
 	private LinkedList<String> blackList = new LinkedList<String>();
 	private LinkedList<String> combineList = new LinkedList<String>();
 	private boolean category = false;
@@ -36,8 +36,8 @@ public class EventCrawler implements Serializable{
 	
 	public EventCrawler(String start){
 		this();
-		models.Document startingtPoint = new models.Document(start, WIKIPEDIA_BASE_URL + "/wiki/"+start);
-		tree = new Tree<models.Document>(startingtPoint, null);
+		Document startingtPoint = new Document(start, WIKIPEDIA_BASE_URL + "/wiki/"+start);
+		tree = new Tree<Document>(startingtPoint, null);
 		toVisit.addFirst(tree);
 	}
 	public EventCrawler(){
@@ -71,16 +71,16 @@ public class EventCrawler implements Serializable{
 	public void crawl(boolean categoryTree) {
 		while(!toVisit.isEmpty()){
 			models.Tree first = toVisit.getFirst();
-			if((models.Document)first.getData() != null && !visited.contains(((models.Document)first.getData()).getTitle()) && first.getData() != null && !blackList.contains(((models.Document)first.getData()).getTitle())){
-				System.out.println("Queuesize: "+toVisit.size()+", Visiting: " +((models.Document)toVisit.getFirst().getData()).getTitle());
+			if((Document)first.getData() != null && !visited.contains(((Document)first.getData()).getTitle()) && first.getData() != null && !blackList.contains(((Document)first.getData()).getTitle())){
+				System.out.println("Queuesize: "+toVisit.size()+", Visiting: " +((Document)toVisit.getFirst().getData()).getTitle());
 				try {
-					if(!categoryTree && combineList.contains(((models.Document)first.getData()).getTitle())){
+					if(!categoryTree && combineList.contains(((Document)first.getData()).getTitle())){
 						category = true;
 						crawlArticlesForCategory(first);
 						category = false;
 					}
-					else if(!combineList.contains(((models.Document)first.getData()).getTitle())){
-						process(((models.Document)first.getData()).getUrl(),first, categoryTree);				
+					else if(!combineList.contains(((Document)first.getData()).getTitle())){
+						process(((Document)first.getData()).getUrl(),first, categoryTree);				
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -88,7 +88,7 @@ public class EventCrawler implements Serializable{
 				}
 			}
 			if(first.getData() != null){
-				visited.add(((models.Document)first.getData()).getTitle());	
+				visited.add(((Document)first.getData()).getTitle());	
 			}
 			toVisit.removeFirst();
 		}
@@ -97,17 +97,17 @@ public class EventCrawler implements Serializable{
 		toVisitCategory.add(parent);
 		while(!toVisitCategory.isEmpty()){
 			models.Tree first = toVisitCategory.getFirst();
-			if(first.getData() != null && !visited.contains(((models.Document)first.getData()).getTitle()) && first.getData() != null && !blackList.contains(((models.Document)first.getData()).getTitle())){
-				System.out.println("Category-Queuesize: "+toVisitCategory.size()+", Visiting: " +((models.Document)toVisitCategory.getFirst().getData()).getTitle());
+			if(first.getData() != null && !visited.contains(((Document)first.getData()).getTitle()) && first.getData() != null && !blackList.contains(((Document)first.getData()).getTitle())){
+				System.out.println("Category-Queuesize: "+toVisitCategory.size()+", Visiting: " +((Document)toVisitCategory.getFirst().getData()).getTitle());
 				try {
-					process(((models.Document)first.getData()).getUrl(), parent, false);					
+					process(((Document)first.getData()).getUrl(), parent, false);					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 			if(first.getData() != null){
-				visited.add(((models.Document)first.getData()).getTitle());	
+				visited.add(((Document)first.getData()).getTitle());	
 			}
 			toVisitCategory.removeFirst();
 		}
@@ -116,19 +116,19 @@ public class EventCrawler implements Serializable{
 	private void process(String url, Tree parent, boolean categoryTree){
 		ArrayDeque visit;
 		if(category) { visit = toVisitCategory;} else { visit = toVisit;}
-		Document doc = Jsoup.parse(getHTML(url));
+		org.jsoup.nodes.Document doc = Jsoup.parse(getHTML(url));
 		Elements body = doc.select("div.mw-content-ltr");
 		if(!body.isEmpty() && (!body.select("#mw-pages").isEmpty() || !body.select("#mw-subcategories").isEmpty())){
 			Elements links = body.select("a[href]"); // a with href
 			for(Element link : links){
-				models.Document docu = null;
+				Document docu = null;
 				try{
-					docu = new models.Document(link.attr("href").split("/wiki/")[1], WIKIPEDIA_BASE_URL + link.attr("href"));
+					docu = new Document(link.attr("href").split("/wiki/")[1], WIKIPEDIA_BASE_URL + link.attr("href"));
 				}
 				catch(ArrayIndexOutOfBoundsException e){
 				//Catch unimportant stuff like editiing pages, etc.
 				}
-				Tree<models.Document> t = new Tree<models.Document>(docu, parent);	
+				Tree<Document> t = new Tree<Document>(docu, parent);	
 				if(!link.attr("href").contains("File:") && !link.attr("href").contains("Help:") && !link.attr("href").contains("Wikipedia:") && !link.attr("href").contains("Special:") && !link.attr("href").contains("Template:")){
 					if(categoryTree){
 						if(link.attr("href").contains("Category:")){
@@ -150,9 +150,9 @@ public class EventCrawler implements Serializable{
 					if(json.getJSONObject("query").getJSONObject("pages").getJSONObject(key).has("extract")){
 						String text = json.getJSONObject("query").getJSONObject("pages").getJSONObject(key).getString("extract");
 						if(text != null){
-							models.Document docu = new models.Document(pageTitle, url);
+							Document docu = new Document(pageTitle, url);
 							docu.setText(text);
-							Tree t = new Tree<models.Document>(docu, parent.getParent());
+							Tree t = new Tree<Document>(docu, parent.getParent());
 							if(!visited.contains(pageTitle)){
 								t.addNode();
 							}
@@ -188,10 +188,10 @@ public class EventCrawler implements Serializable{
 		}
 	    return result.toString();
 	}
-	public Tree<models.Document> getTree(){
+	public Tree<Document> getTree(){
 		return tree;
 	}
-	public List<models.Document> getDocuments(){
+	public List<Document> getDocuments(){
 		return documents;
 	}
 	public void getDocumentsByType(){
@@ -200,11 +200,11 @@ public class EventCrawler implements Serializable{
 //	public void crawl(){
 //	while(!toVisit.isEmpty() && crawlDepth > 0){
 //		models.Tree first = toVisit.getFirst();
-//		if(!visited.contains(first) && first.getData() != null && !blacklist.contains(((models.Document)first.getData()).getTitle())){
-//			System.out.println("Queuesize: "+toVisit.size()+", Visiting: " +((models.Document)toVisit.getFirst().getData()).getTitle());
+//		if(!visited.contains(first) && first.getData() != null && !blacklist.contains(((Document)first.getData()).getTitle())){
+//			System.out.println("Queuesize: "+toVisit.size()+", Visiting: " +((Document)toVisit.getFirst().getData()).getTitle());
 //			first.addNode();
 //			try {
-//				process(((models.Document)first.getData()).getUrl(), first);					
+//				process(((Document)first.getData()).getUrl(), first);					
 //			} catch (Exception e) {
 //				// TODO Auto-generated catch block
 //				e.printStackTrace();

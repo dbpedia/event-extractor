@@ -1,6 +1,10 @@
 package models;
 
 import java.io.Serializable;
+import java.util.List;
+
+import de.fuberlin.inf.agcsw.dbpedia.annotation.models.SpotlightAnnotation;
+import models.framenet.Frame;
 
 public class Document implements Serializable{
 
@@ -8,7 +12,9 @@ public class Document implements Serializable{
 	private String title;
 	private Tree<String> tree;
 	private String text;
-	
+	private SpotlightAnnotation annotation;
+	private List<Frame> frames;
+
 	public Document(String url, Tree<String> tree){
 		this.setUrl(url);
 		this.setTree(tree);
@@ -53,5 +59,17 @@ public class Document implements Serializable{
 
 	public void setText(String text) {
 		this.text = text;
+	}
+	public SpotlightAnnotation getAnnotation() {
+		return annotation;
+	}
+	public void setAnnotation(SpotlightAnnotation annotation) {
+		this.annotation = annotation;
+	}
+	public List<Frame> getFrames() {
+		return frames;
+	}
+	public void setFrames(List<Frame> frames) {
+		this.frames = frames;
 	}
 }
