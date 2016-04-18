@@ -10,16 +10,10 @@ public class Document implements Serializable{
 
 	private String url;
 	private String title;
-	private Tree<String> tree;
 	private String text;
 	private SpotlightAnnotation annotation;
 	private List<Frame> frames;
-
-	public Document(String url, Tree<String> tree){
-		this.setUrl(url);
-		this.setTree(tree);
-		this.setTitle(tree.getData());
-	}
+	
 	public Document(String title, String url){
 		this.setTitle(title);
 		this.setUrl(url);
@@ -43,14 +37,6 @@ public class Document implements Serializable{
 
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public Tree<String> getTree() {
-		return tree;
-	}
-
-	public void setTree(Tree<String> tree) {
-		this.tree = tree;
 	}
 
 	public String getText() {
