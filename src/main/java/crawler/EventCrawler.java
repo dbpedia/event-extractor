@@ -27,29 +27,28 @@ public class EventCrawler implements Serializable{
 	private ArrayDeque<models.Tree> toVisitCategory = new ArrayDeque<models.Tree>();
 	private LinkedList<String> visited = new LinkedList<String>();
 	private LinkedList<models.Document> documents = new LinkedList<models.Document>();
-	private String wikipediaBaseUrl = "https://en.wikipedia.org";
 	private Tree<models.Document> tree;
-	private String contentAPIbaseString = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&explaintext=&titles=";
-	private LinkedList<String> blacklist = new LinkedList<String>();
-	private LinkedList<String> combinelist = new LinkedList<String>();
+	private LinkedList<String> blackList = new LinkedList<String>();
+	private LinkedList<String> combineList = new LinkedList<String>();
 	private boolean category = false;
+	private final String CONTENT_API_BASE_URL = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&explaintext=&titles=";
+	private final String WIKIPEDIA_BASE_URL = "https://en.wikipedia.org";
 	
 	public EventCrawler(String start){
-		models.Document startingtPoint = new models.Document(start, wikipediaBaseUrl + "/wiki/"+start);
+		this();
+		models.Document startingtPoint = new models.Document(start, WIKIPEDIA_BASE_URL + "/wiki/"+start);
 		tree = new Tree<models.Document>(startingtPoint, null);
 		toVisit.addFirst(tree);
-		initializeBlackList();
-		initializeCombineList();
 	}
 	public EventCrawler(){
 		initializeBlackList();
 		initializeCombineList();
 	}
-	private void initializeBlackList() {
+	private final void initializeBlackList() {
 		try(BufferedReader br = new BufferedReader(new FileReader(getClass().getClassLoader().getResource("blacklist.txt").getFile()))){
 	    	String line = br.readLine();
 	    	while (line != null) {
-	    		blacklist.add(line);
+	    		blackList.add(line);
 			line = br.readLine();
 	    	}
 		} catch (Exception e) {
@@ -57,11 +56,11 @@ public class EventCrawler implements Serializable{
 			e.printStackTrace();
 		}
 	}
-	private void initializeCombineList() {
+	private final void initializeCombineList() {
 		try(BufferedReader br = new BufferedReader(new FileReader(getClass().getClassLoader().getResource("combine.txt").getFile()))){
 	    	String line = br.readLine();
 	    	while (line != null) {
-	    		combinelist.add(line);
+	    		combineList.add(line);
 			line = br.readLine();
 	    	}
 		} catch (Exception e) {
@@ -69,18 +68,18 @@ public class EventCrawler implements Serializable{
 			e.printStackTrace();
 		}
 	}
-	public void crawl(boolean categoryTree){
+	public void crawl(boolean categoryTree) {
 		while(!toVisit.isEmpty()){
 			models.Tree first = toVisit.getFirst();
-			if((models.Document)first.getData() != null && !visited.contains(((models.Document)first.getData()).getTitle()) && first.getData() != null && !blacklist.contains(((models.Document)first.getData()).getTitle())){
+			if((models.Document)first.getData() != null && !visited.contains(((models.Document)first.getData()).getTitle()) && first.getData() != null && !blackList.contains(((models.Document)first.getData()).getTitle())){
 				System.out.println("Queuesize: "+toVisit.size()+", Visiting: " +((models.Document)toVisit.getFirst().getData()).getTitle());
 				try {
-					if(!categoryTree && combinelist.contains(((models.Document)first.getData()).getTitle())){
+					if(!categoryTree && combineList.contains(((models.Document)first.getData()).getTitle())){
 						category = true;
 						crawlArticlesForCategory(first);
 						category = false;
 					}
-					else if(!combinelist.contains(((models.Document)first.getData()).getTitle())){
+					else if(!combineList.contains(((models.Document)first.getData()).getTitle())){
 						process(((models.Document)first.getData()).getUrl(),first, categoryTree);				
 					}
 				} catch (Exception e) {
@@ -98,7 +97,7 @@ public class EventCrawler implements Serializable{
 		toVisitCategory.add(parent);
 		while(!toVisitCategory.isEmpty()){
 			models.Tree first = toVisitCategory.getFirst();
-			if(first.getData() != null && !visited.contains(((models.Document)first.getData()).getTitle()) && first.getData() != null && !blacklist.contains(((models.Document)first.getData()).getTitle())){
+			if(first.getData() != null && !visited.contains(((models.Document)first.getData()).getTitle()) && first.getData() != null && !blackList.contains(((models.Document)first.getData()).getTitle())){
 				System.out.println("Category-Queuesize: "+toVisitCategory.size()+", Visiting: " +((models.Document)toVisitCategory.getFirst().getData()).getTitle());
 				try {
 					process(((models.Document)first.getData()).getUrl(), parent, false);					
@@ -124,7 +123,7 @@ public class EventCrawler implements Serializable{
 			for(Element link : links){
 				models.Document docu = null;
 				try{
-					docu = new models.Document(link.attr("href").split("/wiki/")[1], wikipediaBaseUrl + link.attr("href"));
+					docu = new models.Document(link.attr("href").split("/wiki/")[1], WIKIPEDIA_BASE_URL + link.attr("href"));
 				}
 				catch(ArrayIndexOutOfBoundsException e){
 				//Catch unimportant stuff like editiing pages, etc.
@@ -144,8 +143,8 @@ public class EventCrawler implements Serializable{
 		}
 		//Get text if article
 		else if(!categoryTree){		
-			String pageTitle = url.replace(wikipediaBaseUrl+"/wiki/", "");
-			JSONObject json = new JSONObject(getHTML(contentAPIbaseString+pageTitle));
+			String pageTitle = url.replace(WIKIPEDIA_BASE_URL+"/wiki/", "");
+			JSONObject json = new JSONObject(getHTML(CONTENT_API_BASE_URL+pageTitle));
 			if(json.getJSONObject("query").getJSONObject("pages") != null){
 				for(String key : json.getJSONObject("query").getJSONObject("pages").keySet()){
 					if(json.getJSONObject("query").getJSONObject("pages").getJSONObject(key).has("extract")){

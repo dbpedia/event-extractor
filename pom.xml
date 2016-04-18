@@ -19,5 +19,17 @@
             <artifactId>spotlight-sparql-connector</artifactId>
             <version>1.0</version>
         </dependency>
-  </dependencies>
+          <dependency>
+            <groupId>edu.stanford.nlp</groupId>
+            <artifactId>stanford-corenlp</artifactId>
+            <version>3.6.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>edu.stanford.nlp</groupId>
+            <artifactId>stanford-corenlp</artifactId>
+            <version>3.6.0</version>
+            <classifier>models</classifier>
+        </dependency>
+          </dependencies>
 </project>
