@@ -144,6 +144,7 @@ public class EventCrawler implements Serializable{
 		//Get text if article
 		else if(!categoryTree){		
 			String pageTitle = url.replace(WIKIPEDIA_BASE_URL+"/wiki/", "");
+			System.out.println("Getting URL for "+pageTitle);
 			JSONObject json = new JSONObject(getHTML(CONTENT_API_BASE_URL+pageTitle));
 			if(json.getJSONObject("query").getJSONObject("pages") != null){
 				for(String key : json.getJSONObject("query").getJSONObject("pages").keySet()){

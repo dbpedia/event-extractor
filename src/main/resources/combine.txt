@@ -6,3 +6,6 @@ Category:Landslides
 Category:Wildfires
 Category:Avalanches
 Category:Tsunamis
+Category:Wildfires_by_year
+Template:Earthquakes_by_year
+Category:Oil_spills

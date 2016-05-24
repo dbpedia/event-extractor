@@ -14,14 +14,14 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 import Annotation.FramenetParser;
-import Annotation.SentenceSplitter;
+import Preprocessing.SentenceSplitter;
 import de.fuberlin.inf.agcsw.dbpedia.annotation.SpotlightAnnotator;
 import de.fuberlin.inf.agcsw.dbpedia.annotation.models.SpotlightAnnotation;
 import models.framenet.Frame;
 
 public class Annotator {
     private static final String URL_SPOTLIGHT = "http://de.dbpedia.org/spotlight/rest/annotate";
-    private static final String URL_SEMVIZ = "http://dbpedia:32790/api/v1/parse"; //TODO: Use globally available url
+    private static final String URL_SEMVIZ = "http://dbpedia.imp.fu-berlin.de:32790/api/v1/parse"; //TODO: Use globally available url
     private static final int SUPPORT_THRESHOLD = 0;
     private static final double CONFIDENCE_THRESHOLD = 0.5;
     

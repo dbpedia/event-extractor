@@ -1,4 +1,4 @@
-package Annotation;
+package Preprocessing;
 
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
 import edu.stanford.nlp.pipeline.Annotation;
@@ -54,5 +54,10 @@ public class SentenceSplitter {
         }
 
         return result;
+    }
+
+    public static void main(String[] args) {
+        SentenceSplitter slem = new SentenceSplitter();
+        System.out.println(slem.divideIntoChunks(Arrays.asList("A","B","C","D","E","F", "G", "H"), 4));
     }
 }

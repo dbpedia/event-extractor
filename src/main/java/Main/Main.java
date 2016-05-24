@@ -1,20 +1,25 @@
 package Main;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import Annotation.Annotator;
 import crawler.EventCrawler;
+import models.Document;
 import models.Tree;
 
 public class Main {
 		public static void ser() {
-		EventCrawler e = new EventCrawler("Category:Locust_swarms");
+		EventCrawler e = new EventCrawler("Category:Oil_spills");
 		e.crawl(false);
 		try(ObjectOutputStream output = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("crawledStuff.ser")))){
 			output.writeObject(e);
@@ -36,14 +41,21 @@ public class Main {
 		return e;
 	}
 	public static void main(String[] args) {
-		//ser();
+		ser();
 		EventCrawler e = deser();
 		System.out.println(e.getTree());
-		for(models.Document d : e.getDocuments()){
-			Annotator a = new Annotator();
-			d.setAnnotation(a.annotateSpotlight(d.getText()));
-			d.setFrames(a.annotateFrames(d.getText()));
+		/*List<Document> l = e.getDocuments();
+		try(BufferedWriter output = new BufferedWriter(new FileWriter("EarthquakeDocs.txt", true))){
+			for(Document d : l){
+				String text = d.getText().replace("\n", "").trim();
+				String title = d.getTitle().replace("\n", "").trim();
+				output.write(title + "<col>"+text);
+				output.write("\n");
+			}
 		}
+		catch(Exception ex){System.out.println("e");}
+		}*/
 	}
+		
 
 }
