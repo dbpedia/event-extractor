@@ -1,11 +1,7 @@
 package Learning;
 
-
-import java.io.Serializable;
-
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.Function;
 import org.apache.spark.ml.feature.HashingTF;
 import org.apache.spark.ml.feature.IDF;
 import org.apache.spark.ml.feature.IDFModel;
