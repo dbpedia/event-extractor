@@ -23,42 +23,46 @@ public class MainWorkflow {
     private static final Logger LOGGER = LoggerFactory.getLogger(MainWorkflow.class);
     
 	public static void main(String[] args) {
-        LOGGER.info("Creating Spark Context");
+        //Creating Spark Context"
         SparkConf sparkConf = new SparkConf();
         sparkConf.setMaster("local[" + args[0] + "]");
         sparkConf.setAppName("EEx");
         try(JavaSparkContext sc = new JavaSparkContext(sparkConf)){
         
-        LOGGER.info("Setting up");
+        //Setting up documents
         JavaRDD<Document> documents = null;
 		try {
-			LOGGER.info("Preparing floods");
+			
 			List<String> articleTexts = readDocuments("Floods");
 	        JavaRDD<String> textRDD = sc.parallelize(articleTexts);
 	        JavaRDD<Document> floodRDD = textRDD.map(f -> createDocument(f, 0));
-			LOGGER.info("Preparing fires");
+	        
 	        articleTexts = readDocuments("Wildfires");
 			textRDD = sc.parallelize(articleTexts);
 			JavaRDD<Document>  fireRDD = textRDD.map(f -> createDocument(f, 1));
-			LOGGER.info("Preparing qarthquakes");
+			
 			articleTexts = readDocuments("Earthquakes");
 	        textRDD = sc.parallelize(articleTexts);
 	        JavaRDD<Document> quakeRDD = textRDD.map(f -> createDocument(f, 1));
-			LOGGER.info("Union");
+			//Union
 	        documents = floodRDD.union(fireRDD).union(quakeRDD);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error("IOEXCeption during reading of documents");
 		}
         
-        LOGGER.info("Pass to Learner");
+        //Pass to Learner"
         LearningWorkflow lw = new LearningWorkflow(sc);
         lw.preprocess(documents);
         SVMModel model = lw.createModel();
         lw.evalModel(model);
 	}
 }
-
+	/**
+	 * Helper method to enrich the files
+	 * @param text the document text
+	 * @param label the classification label
+	 * @return the aggregated document
+	 */
 	private static Document createDocument(String text, double label) {
 		Document d = new Document("","");
 		d.setText(text);
@@ -68,7 +72,14 @@ public class MainWorkflow {
        //	d.setAnnotation(anno.annotateSpotlight(text));
        	return d;
 	}
-
+	
+	/**
+	 * Helper method to read the texts
+	 * @param topic Eventtype of the file to be read
+	 * @return a list of Strings (the document texts)
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	private static List<String> readDocuments(String topic) throws FileNotFoundException, IOException {
 		LinkedList<String> list = new LinkedList<String>();
 		try(BufferedReader br = new BufferedReader(new FileReader(topic+".txt"))){

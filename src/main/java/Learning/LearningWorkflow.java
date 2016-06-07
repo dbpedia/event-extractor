@@ -34,14 +34,16 @@ public class LearningWorkflow{
     private JavaSparkContext sc;
     JavaRDD<LabeledPoint> train;
     JavaRDD<LabeledPoint> test;
-    //SVMModel model;
     
     public LearningWorkflow(JavaSparkContext sc){
 		this.sc = sc;
 	}
-    
+    /**
+     * Preprocessing, Stop-word removal, lemmatizing, TF-IDF calculation, splitting docs into training and test set
+     * @param docs the documents to preprocess
+     */
     public void preprocess(JavaRDD<Document> docs){
-        LOGGER.info("Preprocessing");
+        //Preprocessing
         JavaRDD<Document> preprocessedDocuments = docs.map(f -> {
         	f.setText(StanfordUtils.lemmatizeArticle(f.getText()));
         	return f;
@@ -68,23 +70,27 @@ public class LearningWorkflow{
 		JavaRDD<Row> rows = rescaledData.rdd().toJavaRDD();
         JavaRDD<LabeledPoint>  data = rows.map(f -> new LabeledPoint(f.getDouble(0), f.getAs(4)));
         
-        LOGGER.info("Split initial RDD into two... [60% training data, 40% testing data].");
+        //Split initial RDD into two... [60% training data, 40% testing data].
         train = data.sample(false, 0.6, 11L);
         train.cache();
         test = data.subtract(train);
     }
-    
+    /**
+     * //Training of the model
+     * @return the model
+     */
     public SVMModel createModel(){
-        
-        LOGGER.info("Training");
         int numIterations = 100;
         SVMModel model = SVMWithSGD.train(train.rdd(), numIterations);
         return model;
     }
-    
-    public JavaRDD<Tuple2<Object, Object>> evalModel(SVMModel model){
+    /**
+     * evaluation of the given model
+     * @param model the model to evaluate
+     */
+    public void evalModel(SVMModel model){
     	model.clearThreshold();
-    	 LOGGER.info("Testing");
+    	 //Testing
          // Compute raw scores on the test set.
          JavaRDD<Tuple2<Object, Object>> scoreAndLabels = test.map(p -> {
                Double score = model.predict(p.features());
@@ -97,6 +103,5 @@ public class LearningWorkflow{
          double auROC = metrics.areaUnderROC();
          
          System.out.println("Area under ROC = " + auROC);
-         return scoreAndLabels;
     }
 }
