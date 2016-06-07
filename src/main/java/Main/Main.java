@@ -19,7 +19,7 @@ import models.Tree;
 
 public class Main {
 		public static void ser() {
-		EventCrawler e = new EventCrawler("Category:Oil_spills");
+		EventCrawler e = new EventCrawler("Category:Wildfires_by_year");
 		e.crawl(false);
 		try(ObjectOutputStream output = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("crawledStuff.ser")))){
 			output.writeObject(e);
@@ -44,17 +44,16 @@ public class Main {
 		ser();
 		EventCrawler e = deser();
 		System.out.println(e.getTree());
-		/*List<Document> l = e.getDocuments();
-		try(BufferedWriter output = new BufferedWriter(new FileWriter("EarthquakeDocs.txt", true))){
+		List<Document> l = e.getDocuments();
+		try(BufferedWriter output = new BufferedWriter(new FileWriter("Wildfires.txt", true))){
 			for(Document d : l){
 				String text = d.getText().replace("\n", "").trim();
-				String title = d.getTitle().replace("\n", "").trim();
-				output.write(title + "<col>"+text);
+				output.write(text);
 				output.write("\n");
 			}
 		}
-		catch(Exception ex){System.out.println("e");}
-		}*/
+		catch(Exception ex){System.out.println("e");
+		}
 	}
 		
 

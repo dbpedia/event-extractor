@@ -1,81 +1,102 @@
 package Learning;
 
+
+import java.io.Serializable;
+
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.storage.StorageLevel;
-import org.canova.api.records.reader.RecordReader;
-import org.canova.api.records.reader.impl.CSVRecordReader;
-import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
-import org.deeplearning4j.spark.canova.RecordReaderFunction;
-import org.nd4j.linalg.dataset.DataSet;
+import org.apache.spark.api.java.function.Function;
+import org.apache.spark.ml.feature.HashingTF;
+import org.apache.spark.ml.feature.IDF;
+import org.apache.spark.ml.feature.IDFModel;
+import org.apache.spark.ml.feature.Tokenizer;
+import org.apache.spark.mllib.classification.SVMModel;
+import org.apache.spark.mllib.classification.SVMWithSGD;
+import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
+import org.apache.spark.mllib.regression.LabeledPoint;
+import org.apache.spark.sql.DataFrame;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
+import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import Preprocessing.StanfordUtils;
 import models.Document;
+import scala.Tuple2;
 
-import java.util.*;
-public class LearningWorkflow {
+public class LearningWorkflow{
     private static final Logger LOGGER = LoggerFactory.getLogger(LearningWorkflow.class);
-    private int LABEL_INDEX =  4;
-    private int NUM_OUTPUT_CLASSES = 3;
-    private int RANDOM_SEED = 12345;
-    private int nCores;
+    private JavaSparkContext sc;
+    JavaRDD<LabeledPoint> train;
+    JavaRDD<LabeledPoint> test;
+    //SVMModel model;
     
-    public LearningWorkflow(int cores){
-    	nCores = cores;
-    }
+    public LearningWorkflow(JavaSparkContext sc){
+		this.sc = sc;
+	}
     
-    public MultiLayerNetwork createModel(JavaRDD<Document> docs, JavaSparkContext sc){
-        
-        //Preprocessing
+    public void preprocess(JavaRDD<Document> docs){
+        LOGGER.info("Preprocessing");
         JavaRDD<Document> preprocessedDocuments = docs.map(f -> {
         	f.setText(StanfordUtils.lemmatizeArticle(f.getText()));
         	return f;
         });
-        JavaRDD<String> csvData = preprocessedDocuments.map(f -> createCSVRepresentation(f));
-        RecordReader recordReader = new CSVRecordReader(0,",");
-        JavaRDD<DataSet> allData = csvData.map(new RecordReaderFunction(recordReader, LABEL_INDEX, NUM_OUTPUT_CLASSES));
-       
-        //Split in Trainingset and Testset
-        //Bottleneck? begin
-        List<DataSet> dataList = allData.collect();
-        Collections.shuffle(dataList,new Random(RANDOM_SEED));
-
-        int nTrain = dataList.size()/3;
-        int nTest = dataList.size()-nTrain;
-        Iterator<DataSet> iter = dataList.iterator();
-        List<DataSet> train = new ArrayList<>(nTrain);
-        List<DataSet> test = new ArrayList<>(nTest);
-
-        int c = 0;
-        while(iter.hasNext()){
-            if(c++ <= nTrain) train.add(iter.next());
-            else test.add(iter.next());
-        }
-
-        JavaRDD<DataSet> sparkDataTrain = sc.parallelize(train);
-        sparkDataTrain.persist(StorageLevel.MEMORY_ONLY());
-        //Bottlenet? end
+        JavaRDD<Row> jrdd = preprocessedDocuments.map(f -> RowFactory.create(f.getLabel(), f.getText()));
+		
+		StructType schema = new StructType(new StructField[]{
+		  new StructField("label", DataTypes.DoubleType, false, Metadata.empty()),
+		  new StructField("sentence", DataTypes.StringType, false, Metadata.empty())
+		});
+		SQLContext sqlContext = new SQLContext(sc);
+		DataFrame sentenceData = sqlContext.createDataFrame(jrdd, schema);
+		Tokenizer tokenizer = new Tokenizer().setInputCol("sentence").setOutputCol("words");
+		DataFrame wordsData = tokenizer.transform(sentenceData);
+		int numFeatures = 20;
+		HashingTF hashingTF = new HashingTF()
+		  .setInputCol("words")
+		  .setOutputCol("rawFeatures")
+		  .setNumFeatures(numFeatures);
+		DataFrame featurizedData = hashingTF.transform(wordsData);
+		IDF idf = new IDF().setInputCol("rawFeatures").setOutputCol("features");
+		IDFModel idfModel = idf.fit(featurizedData);
+		DataFrame rescaledData = idfModel.transform(featurizedData);
+		JavaRDD<Row> rows = rescaledData.rdd().toJavaRDD();
+        JavaRDD<LabeledPoint>  data = rows.map(f -> new LabeledPoint(f.getDouble(0), f.getAs(4)));
         
-        //Training
-        CNNLearner cnn = new CNNLearner(nCores);
-        MultiLayerNetwork model = cnn.train(sparkDataTrain, sc);
-        
-        DBNLearner dbn = new DBNLearner(nCores);
-        MultiLayerNetwork model2 = dbn.train(sparkDataTrain, sc);
-        
-        
-        //Testing
-        ModelEvaluate.evaluate(model, test, 10);
-        ModelEvaluate.evaluate(model2, test, 10);
-        
-        return model;
-
+        LOGGER.info("Split initial RDD into two... [60% training data, 40% testing data].");
+        train = data.sample(false, 0.6, 11L);
+        train.cache();
+        test = data.subtract(train);
     }
-
-	private String createCSVRepresentation(Document doc) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    
+    public SVMModel createModel(){
+        
+        LOGGER.info("Training");
+        int numIterations = 100;
+        SVMModel model = SVMWithSGD.train(train.rdd(), numIterations);
+        return model;
+    }
+    
+    public JavaRDD<Tuple2<Object, Object>> evalModel(SVMModel model){
+    	model.clearThreshold();
+    	 LOGGER.info("Testing");
+         // Compute raw scores on the test set.
+         JavaRDD<Tuple2<Object, Object>> scoreAndLabels = test.map(p -> {
+               Double score = model.predict(p.features());
+               return new Tuple2<Object, Object>(score, p.label());
+           }
+         ) ;
+         // Get evaluation metrics.
+         BinaryClassificationMetrics metrics =
+           new BinaryClassificationMetrics(JavaRDD.toRDD(scoreAndLabels));
+         double auROC = metrics.areaUnderROC();
+         
+         System.out.println("Area under ROC = " + auROC);
+         return scoreAndLabels;
+    }
 }

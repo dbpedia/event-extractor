@@ -31,7 +31,7 @@ public class EventCrawler implements Serializable{
 	private LinkedList<String> blackList = new LinkedList<String>();
 	private LinkedList<String> combineList = new LinkedList<String>();
 	private boolean category = false;
-	private final String CONTENT_API_BASE_URL = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&explaintext=&titles=";
+	private final String CONTENT_API_BASE_URL = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=";
 	private final String WIKIPEDIA_BASE_URL = "https://en.wikipedia.org";
 	
 	public EventCrawler(String start){

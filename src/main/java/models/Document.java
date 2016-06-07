@@ -13,6 +13,7 @@ public class Document implements Serializable{
 	private String text;
 	private SpotlightAnnotation annotation;
 	private List<Frame> frames;
+	private double label;
 	
 	public Document(String title, String url){
 		this.setTitle(title);
@@ -57,5 +58,11 @@ public class Document implements Serializable{
 	}
 	public void setFrames(List<Frame> frames) {
 		this.frames = frames;
+	}
+	public double getLabel() {
+		return label;
+	}
+	public void setLabel(double label) {
+		this.label = label;
 	}
 }
