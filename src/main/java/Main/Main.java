@@ -1,10 +1,12 @@
 package Main;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -13,9 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Annotation.Annotator;
-import crawler.EventCrawler;
+import Crawler.EventCrawler;
+import Preprocessing.StanfordUtils;
+import de.fuberlin.inf.agcsw.dbpedia.annotation.models.SpotlightAnnotation;
 import models.Document;
 import models.Tree;
+import models.framenet.Frame;
 
 public class Main {
 		public static void ser() {
@@ -41,20 +46,68 @@ public class Main {
 		return e;
 	}
 	public static void main(String[] args) {
-		ser();
-		EventCrawler e = deser();
-		System.out.println(e.getTree());
-		List<Document> l = e.getDocuments();
-		try(BufferedWriter output = new BufferedWriter(new FileWriter("Wildfires.txt", true))){
-			for(Document d : l){
-				String text = d.getText().replace("\n", "").trim();
-				output.write(text);
-				output.write("\n");
-			}
+		try(BufferedReader br = new BufferedReader(new FileReader("Wildfires.txt"))){
+			try(BufferedWriter output = new BufferedWriter(new FileWriter("WildfiresAnno.txt", true))){
+				Annotator anno = new Annotator();
+				int i = 0;
+				int j = 0;
+				String text = br.readLine();
+				while(j <= 21){
+					 text = br.readLine();
+					j++;
+				}
+		    	while (text != null && i < 20) {
+				
+		    		List<Frame> f = anno.annotateFrames(text);
+					SpotlightAnnotation a = anno.annotateSpotlight(text);
+					StringBuilder sb = new StringBuilder();
+					sb.append(StanfordUtils.lemmatizeArticle(text));
+					sb.append(" ");
+		        	sb.append(a.getTypes());
+		        	for(Frame frame : f){
+		        		sb.append(frame.getTarget().getName());
+		        		sb.append(" ");
+		        	}
+		        	System.out.println(sb.toString());
+		        	output.write(sb.toString());
+		        	output.write("\n");
+		    		
+		    	i++;	
+				text = br.readLine();
+	    	}
 		}
-		catch(Exception ex){System.out.println("e");
-		}
+	}catch(Exception ex){
+		System.out.println("e"); 
 	}
 		
+	/*	try(BufferedWriter output = new BufferedWriter(new FileWriter("WildfiresAnno.txt", true))){
+			Annotator anno = new Annotator();
+			int i = 0;
+			for(Document d : l){
+				String text = d.getText().replace("\n", "").trim();
+				List<Frame> f = anno.annotateFrames(text);
+				SpotlightAnnotation a = anno.annotateSpotlight(text);
+				StringBuilder sb = new StringBuilder();
+				sb.append(StanfordUtils.lemmatizeArticle(text));
+				sb.append(" ");
+	        	sb.append(a.getTypes());
+	        	for(Frame frame : f){
+	        		sb.append(frame.getTarget().getName());
+	        		sb.append(" ");
+	        	}
+	        	System.out.println(sb.toString());
 
+	        	i++;
+	        	if(i == 20){
+	        		break;
+	        	}
+			}
+		}
+	        	output.write(text);
+	        	output.write("\n");
+	        	}
+			}
+		catch(Exception ex){System.out.println("e");
+		}*/
+	}
 }
