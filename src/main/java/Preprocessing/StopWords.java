@@ -7,7 +7,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
-
+/**
+ * Created by wojlukas
+ */
 public class StopWords {
 	
 	private static HashSet<String> stopWords = new HashSet<String>();

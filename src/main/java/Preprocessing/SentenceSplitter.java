@@ -10,7 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
-
+/**
+ * Created by wojlukas
+ */
 public class SentenceSplitter {
 
     private StanfordCoreNLP pipeline;

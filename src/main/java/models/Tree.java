@@ -2,7 +2,12 @@ package models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-
+/**
+ * Helper class to keep track of information during crawling
+ * @author Vincent Bohlen (vincent.bohlen@fu-berlin.de)
+ *
+ * @param <T>
+ */
 public class Tree<T> implements Serializable {
     private Tree<T> parent;
     private T data;

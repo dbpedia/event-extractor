@@ -18,11 +18,18 @@ import org.jsoup.Jsoup;
 import models.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import models.Tree;
-
+/**
+ * Class to crawl wikipedia Event Categories for texts. Used to gather training material. 
+ * @author Vincent Bohlen (vincent.bohlen@fu-berlin.de)
+ *
+ */
 public class EventCrawler implements Serializable{
-
+	
+    private final Logger LOGGER = LoggerFactory.getLogger(EventCrawler.class);
 	private ArrayDeque<Tree> toVisit = new ArrayDeque<Tree>();
 	private ArrayDeque<Tree> toVisitCategory = new ArrayDeque<Tree>();
 	private LinkedList<String> visited = new LinkedList<String>();
@@ -52,8 +59,7 @@ public class EventCrawler implements Serializable{
 			line = br.readLine();
 	    	}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error(e.getStackTrace().toString());
 		}
 	}
 	private final void initializeCombineList() {
@@ -64,8 +70,7 @@ public class EventCrawler implements Serializable{
 			line = br.readLine();
 	    	}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error(e.getStackTrace().toString());
 		}
 	}
 	public void crawl(boolean categoryTree) {
@@ -102,8 +107,7 @@ public class EventCrawler implements Serializable{
 				try {
 					process(((Document)first.getData()).getUrl(), parent, false);					
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOGGER.error(e.getStackTrace().toString());
 				}
 			}
 			if(first.getData() != null){
@@ -184,8 +188,7 @@ public class EventCrawler implements Serializable{
 		} catch (FileNotFoundException e) {
 			//usually wikimedia links. unusable.
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error(e.getStackTrace().toString());
 		}
 	    return result.toString();
 	}

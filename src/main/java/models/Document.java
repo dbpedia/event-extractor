@@ -5,7 +5,11 @@ import java.util.List;
 
 import de.fuberlin.inf.agcsw.dbpedia.annotation.models.SpotlightAnnotation;
 import models.framenet.Frame;
-
+/**
+ * Class to pass the collection of information about a text through the training and classification workflow
+ * @author Vincent Bohlen (vincent.bohlen@fu-berlin.de)
+ *
+ */
 public class Document implements Serializable{
 
 	private String url;

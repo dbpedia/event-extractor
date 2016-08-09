@@ -24,10 +24,15 @@ import org.slf4j.LoggerFactory;
 
 import Annotation.Annotator;
 import Learning.LearningWorkflow;
+import Learning.ModelEvaluate;
 import models.Document;
 import scala.Tuple2;
 import scala.collection.mutable.HashMap;
-
+/**
+ * Main Class to perform training and classification
+ * @author Vincent Bohlen (vincent.bohlen@fu-berlin.de)
+ *
+ */
 public class MainWorkflow implements Serializable{
 	
     private final Logger LOGGER = LoggerFactory.getLogger(MainWorkflow.class);
@@ -92,42 +97,49 @@ public class MainWorkflow implements Serializable{
 		return types.get(prediction).get();
 	}
 	
-    /**
-     * Method to start the training process
-     */
-	public void train(){
+	/**
+	 * Method to start the training process
+	 * @param evaluation true if you want to perform evaluation of the model (use only 60% of examples for training)
+	 */
+	public void train(boolean evaluation){
 		//Cleanup/Delete old model
 		try {
 			delete(new File(modelPath+"logRegModel"));
 		} catch (IOException e) {
 			LOGGER.error(e.getStackTrace().toString());
 		}
-		logReg();
+		logReg(evaluation);
 	}
 	/**
 	 * Method to actually perform training of the logistic regression model
+	 * @param evaluation true if you want to perform evaluation of the model (use only 60% of examples for training)
 	 */
-	private void logReg() {
+	private void logReg(boolean evaluation) {
 		 try(JavaSparkContext sc = new JavaSparkContext(setUpSparkConf())){
-        	JavaRDD<Document> documents = setUpMultiClassDocs(sc);
+        	JavaRDD<Document> documents = setUpMultiClassDocs(sc, evaluation);
         	Serializer.serialize(modelPath+"types.ser", types);
             //Pass to Learner
         	LearningWorkflow lw = new LearningWorkflow(sc);
         	IDFModel idf = lw.trainIDFModel(documents);
         	Serializer.serialize(modelPath + "idf.ser", idf);
             lw.preprocess(documents, idf, true);
+            
             LogisticRegressionModel model = lw.createLogRegModel(types.size());
             model.save(JavaSparkContext.toSparkContext(sc), modelPath + "logRegModel");
-            evaluateLogReg(sc, model, idf);
+            
+            if(evaluation){
+            	ModelEvaluate.evaluate(sc, model, idf, testDocRDD);
+            }
 		 }
 	}
 	
 	/**
 	 * Method to set up the documents for training the model
-	 * @param sc
+	 * @param sc JavaSparkContext
+	 * @param evaluation true if you want to perform evaluation of the model (use only 60% of examples for training)
 	 * @return a JavaRDD containing the set up documents
 	 */
-	private JavaRDD<Document> setUpMultiClassDocs(JavaSparkContext sc) {
+	private JavaRDD<Document> setUpMultiClassDocs(JavaSparkContext sc, boolean evaluation) {
 		  JavaRDD<Document>[] splits = null;
 		  JavaRDD<Document> unionRDD = null;
 		  File trainingFolder = new File(trainExamplesPath);
@@ -147,12 +159,15 @@ public class MainWorkflow implements Serializable{
 					  unionRDD = unionRDD.union(categoryRDD);
 				  }
 			  }
-			  splits = unionRDD.randomSplit(new double[] {0.6, 0.4}, 11L);
-			  testDocRDD = splits[1];
+			  if(evaluation){
+				  splits = unionRDD.randomSplit(new double[] {0.6, 0.4}, 11L);
+				  testDocRDD = splits[1];
+				  return splits[0];
+			  }
 			} catch (IOException e) {
 				LOGGER.error("IOEXCeption during reading of documents");
 			}
-			return splits[0];	
+			return unionRDD;
 	}
 	
 	/**
@@ -196,59 +211,34 @@ public class MainWorkflow implements Serializable{
 	}
 	
 	/**
-	 * Evaluation method for the trained model
-	 * @param sc JavaSparkContext
-	 * @param model the model to evaluate
-	 * @param idf 
-	 */
-	private void evaluateLogReg(JavaSparkContext sc, LogisticRegressionModel model, IDFModel idf) {
-		LearningWorkflow lw = new LearningWorkflow(sc);
-    	JavaRDD<LabeledPoint> test = lw.preprocess(testDocRDD, idf, true);
-    	
-    	JavaRDD<Tuple2<Object, Object>> scoreAndLabels = test.map(p -> {
-    	          Double prediction = model.predict(p.features());
-    	          return new Tuple2<Object, Object>(prediction, p.label());
-    	});
-    	MulticlassMetrics metrics = new MulticlassMetrics(scoreAndLabels.rdd());
- 		double pre = metrics.precision();
- 		double rec = metrics.recall();
- 		double fmeasure = metrics.fMeasure();
-         System.out.println("Results: "+ scoreAndLabels.count());
-         System.out.println(scoreAndLabels.collect().toString());
-         System.out.println("Precission = " + pre);
-         System.out.println("Recall = " + rec);
-         System.out.println("FMeasure = " + fmeasure);
-         System.out.println(metrics.confusionMatrix());
-	}
-	
-	/**
 	 * Helper method to clean up the old model.
+	 * @param folder folder of the model to delete
 	 */
-    private static void delete(File file) throws IOException{
-    	if(file.isDirectory()){
-    		if(file.list().length==0){
-    		   file.delete();
-    		   System.out.println("Directory is deleted : " + file.getAbsolutePath());
+    private static void delete(File folder) throws IOException{
+    	if(folder.isDirectory()){
+    		if(folder.list().length==0){
+    		   folder.delete();
+    		   System.out.println("Directory is deleted : " + folder.getAbsolutePath());
     		}else{
-        	   String files[] = file.list();
+        	   String files[] = folder.list();
         	   for (String temp : files) {
-        	      File fileDelete = new File(file, temp);
+        	      File fileDelete = new File(folder, temp);
         	     delete(fileDelete);
         	   }
-        	   if(file.list().length==0){
-           	     file.delete();
-        	     System.out.println("Directory is deleted : " + file.getAbsolutePath());
+        	   if(folder.list().length==0){
+           	     folder.delete();
+        	     System.out.println("Directory is deleted : " + folder.getAbsolutePath());
         	   }
     		}
     	}else{
-    		file.delete();
-    		System.out.println("File is deleted : " + file.getAbsolutePath());
+    		folder.delete();
+    		System.out.println("File is deleted : " + folder.getAbsolutePath());
     	}
     }
 
 	public static void main(String[] args) {
         MainWorkflow mw = new MainWorkflow();
-        mw.train();
+        mw.train(true);
         String classs = mw.classify("A 1,500-acre wildfire raged near Pilot Rock Conservation Camp above Silverwood Lake on Sunday, fire officials said.");
         System.out.println(classs);
 	}

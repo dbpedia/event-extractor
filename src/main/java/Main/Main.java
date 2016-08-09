@@ -14,15 +14,25 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import Annotation.Annotator;
 import Crawler.EventCrawler;
+import Learning.ModelEvaluate;
 import Preprocessing.StanfordUtils;
 import de.fuberlin.inf.agcsw.dbpedia.annotation.models.SpotlightAnnotation;
 import models.Document;
 import models.Tree;
 import models.framenet.Frame;
-
+/**
+ * Class to perform crawling of wikipedia articles for training (helper)
+ * @author Vincent Bohlen (vincent.bohlen@fu-berlin.de)
+ *
+ */
 public class Main {
+    	private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+
 		public static void ser() {
 		EventCrawler e = new EventCrawler("Category:Wildfires_by_year");
 		e.crawl(false);
@@ -68,7 +78,6 @@ public class Main {
 		        		sb.append(frame.getTarget().getName());
 		        		sb.append(" ");
 		        	}
-		        	System.out.println(sb.toString());
 		        	output.write(sb.toString());
 		        	output.write("\n");
 		    		
@@ -77,7 +86,7 @@ public class Main {
 	    	}
 		}
 	}catch(Exception ex){
-		System.out.println("e"); 
+		LOGGER.error(ex.getStackTrace().toString());
 	}
 		
 	/*	try(BufferedWriter output = new BufferedWriter(new FileWriter("WildfiresAnno.txt", true))){

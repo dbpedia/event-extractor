@@ -27,12 +27,15 @@ import Preprocessing.StanfordUtils;
 import models.Document;
 import models.framenet.Frame;
 import scala.Tuple2;
-
+/**
+ * Class to handle the preprocessing and training
+ * @author Vincent Bohlen (vincent.bohlen@fu-berlin.de)
+ *
+ */
 public class LearningWorkflow{
     private static final Logger LOGGER = LoggerFactory.getLogger(LearningWorkflow.class);
     private JavaSparkContext sc;
     JavaRDD<LabeledPoint> train;
-    JavaRDD<LabeledPoint> test;
     
     public LearningWorkflow(JavaSparkContext sc){
 		this.sc = sc;
@@ -68,6 +71,7 @@ public class LearningWorkflow{
 		IDFModel idfModel = idf.fit(featurizedData);
         return idfModel;
     }
+    
     /**
      * Preprocessing: Stop-word removal, lemmatizing, TF-IDF calculation, (possibly addition of annotations)
      * @param docs the documents to preprocess
@@ -92,7 +96,6 @@ public class LearningWorkflow{
 	        		sb.append(frame.getTarget().getName());
 	        		sb.append(" ");
 	        	}
-	        	System.out.println(sb.toString());
 	        	f.setText(sb.toString().trim());
 	        	return f;
 	       });

@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Helper class for serialization
- * @author vincent
+ * @author Vincent Bohlen (vincent.bohlen@fu-berlin.de)
  *
  */
 public class Serializer {
