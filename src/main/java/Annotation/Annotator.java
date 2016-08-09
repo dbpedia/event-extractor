@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import Annotation.FramenetParser;
-import Main.MainWorkflow;
 import Preprocessing.SentenceSplitter;
 import models.dbpedia.SpotlightAnnotation;
 import models.framenet.Frame;
