@@ -17,7 +17,6 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.ml.feature.IDFModel;
-import org.apache.spark.mllib.evaluation.MulticlassMetrics;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,6 @@ import Annotation.Annotator;
 import Learning.LearningWorkflow;
 import Learning.ModelEvaluate;
 import models.Document;
-import scala.Tuple2;
 import scala.collection.mutable.HashMap;
 /**
  * Main Class to perform training and classification
