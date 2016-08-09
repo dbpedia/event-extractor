@@ -67,8 +67,8 @@ public class MainWorkflow implements Serializable{
     }
     
     /**
-     * Method to setup the Spark configutation
-     * @return
+     * Method to setup the Spark configuration
+     * @return the resulting SparkConf
      */
     private SparkConf setUpSparkConf(){
         SparkConf sparkConf = new SparkConf();
