@@ -21,8 +21,7 @@ import org.slf4j.LoggerFactory;
 import Annotation.FramenetParser;
 import Main.MainWorkflow;
 import Preprocessing.SentenceSplitter;
-import de.fuberlin.inf.agcsw.dbpedia.annotation.SpotlightAnnotator;
-import de.fuberlin.inf.agcsw.dbpedia.annotation.models.SpotlightAnnotation;
+import models.dbpedia.SpotlightAnnotation;
 import models.framenet.Frame;
 /**
  * Class for annotating given texts with spotlight and semviz

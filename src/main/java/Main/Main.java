@@ -21,9 +21,9 @@ import Annotation.Annotator;
 import Crawler.EventCrawler;
 import Learning.ModelEvaluate;
 import Preprocessing.StanfordUtils;
-import de.fuberlin.inf.agcsw.dbpedia.annotation.models.SpotlightAnnotation;
 import models.Document;
 import models.Tree;
+import models.dbpedia.SpotlightAnnotation;
 import models.framenet.Frame;
 /**
  * Class to perform crawling of wikipedia articles for training (helper)
