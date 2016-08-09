@@ -214,11 +214,11 @@ public class MainWorkflow implements Serializable{
 	 * Helper method to clean up the old model.
 	 * @param folder folder of the model to delete
 	 */
-    private static void delete(File folder) throws IOException{
+    private void delete(File folder) throws IOException{
     	if(folder.isDirectory()){
     		if(folder.list().length==0){
     		   folder.delete();
-    		   System.out.println("Directory is deleted : " + folder.getAbsolutePath());
+    		   LOGGER.info("Directory is deleted : " + folder.getAbsolutePath());
     		}else{
         	   String files[] = folder.list();
         	   for (String temp : files) {
@@ -227,12 +227,12 @@ public class MainWorkflow implements Serializable{
         	   }
         	   if(folder.list().length==0){
            	     folder.delete();
-        	     System.out.println("Directory is deleted : " + folder.getAbsolutePath());
+           	     LOGGER.info("Directory is deleted : " + folder.getAbsolutePath());
         	   }
     		}
     	}else{
     		folder.delete();
-    		System.out.println("File is deleted : " + folder.getAbsolutePath());
+    		LOGGER.info("File is deleted : " + folder.getAbsolutePath());
     	}
     }
 
