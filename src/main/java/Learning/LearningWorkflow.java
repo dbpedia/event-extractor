@@ -8,9 +8,6 @@ import org.apache.spark.ml.feature.IDF;
 import org.apache.spark.ml.feature.IDFModel;
 import org.apache.spark.ml.feature.Tokenizer;
 import org.apache.spark.mllib.classification.LogisticRegressionWithLBFGS;
-import org.apache.spark.mllib.classification.SVMModel;
-import org.apache.spark.mllib.classification.SVMWithSGD;
-import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.Row;
@@ -26,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import Preprocessing.StanfordUtils;
 import models.Document;
 import models.framenet.Frame;
-import scala.Tuple2;
 /**
  * Class to handle the preprocessing and training
  * @author Vincent Bohlen (vincent.bohlen@fu-berlin.de)

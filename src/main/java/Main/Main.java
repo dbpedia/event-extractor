@@ -11,7 +11,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -19,10 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import Annotation.Annotator;
 import Crawler.EventCrawler;
-import Learning.ModelEvaluate;
 import Preprocessing.StanfordUtils;
-import models.Document;
-import models.Tree;
 import models.dbpedia.SpotlightAnnotation;
 import models.framenet.Frame;
 /**
