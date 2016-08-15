@@ -20,6 +20,7 @@ import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import Annotation.Annotator;
 import Preprocessing.StanfordUtils;
 import models.Document;
 import models.framenet.Frame;
@@ -43,10 +44,6 @@ public class LearningWorkflow{
      */
     public IDFModel trainIDFModel(JavaRDD<Document> docs){
         //Preprocessing
-     	JavaRDD<Document> preprocessedDocuments = docs.map(f -> {
-    		f.setText(StanfordUtils.lemmatizeArticle(f.getText()));
-    		return f;
-    		});
         JavaRDD<Row> jrdd = docs.map(f -> RowFactory.create(f.getLabel(), f.getText()));
 		
 		StructType schema = new StructType(new StructField[]{
@@ -83,18 +80,10 @@ public class LearningWorkflow{
     		});
     	}
     	else{	
-	        preprocessedDocuments = docs.map(f -> {
-	       	StringBuilder sb = new StringBuilder();
-	        	sb.append(StanfordUtils.lemmatizeArticle(f.getText()));
-	        	sb.append(" ");
-	        	sb.append(f.getAnnotation().getTypes());
-	        	for(Frame frame : f.getFrames()){
-	        		sb.append(frame.getTarget().getName());
-	        		sb.append(" ");
-	        	}
-	        	f.setText(sb.toString().trim());
-	        	return f;
-	       });
+    		preprocessedDocuments = docs.map(f -> {
+	    		f.setText(Annotator.annotateBothToString(f.getText()));
+	    		return f;
+	    		});
     	}
         JavaRDD<Row> jrdd = preprocessedDocuments.map(f -> RowFactory.create(f.getLabel(), f.getText()));
 		

@@ -163,7 +163,7 @@ public class MainWorkflow implements Serializable{
 				  return splits[0];
 			  }
 			} catch (IOException e) {
-				LOGGER.error("IOEXCeption during reading of documents");
+				LOGGER.error(e.getMessage());
 			}
 			return unionRDD;
 	}
@@ -197,9 +197,7 @@ public class MainWorkflow implements Serializable{
 	 */
 	private List<String> readMultiClassDocuments(File path, List<String> train) throws FileNotFoundException, IOException {
 		
-		if(trainSetSize == null){
-			trainSetSize = path.listFiles().length;
-		}
+		trainSetSize = path.listFiles().length;
 		for(int i=0; i < trainSetSize ; i++){
 			try(BufferedReader br = new BufferedReader(new FileReader(path.listFiles()[i]))){
 	    		train.add(br.readLine());

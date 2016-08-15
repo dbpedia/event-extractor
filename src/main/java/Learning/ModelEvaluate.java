@@ -37,10 +37,18 @@ public class ModelEvaluate {
  		double pre = metrics.precision();
  		double rec = metrics.recall();
  		double fmeasure = metrics.fMeasure();
-        LOGGER.info("Results: "+ scoreAndLabels.count());
-        LOGGER.info(scoreAndLabels.collect().toString());
-        LOGGER.info("Precission = " + pre);
-        LOGGER.info("Recall = " + rec);
-        LOGGER.info("FMeasure = " + fmeasure);
+ 		
+ 		LOGGER.info("Results: "+ scoreAndLabels.count());
+ 		LOGGER.info(scoreAndLabels.collect().toString());
+ 		LOGGER.info("Precission = " + pre);
+ 		LOGGER.info("Recall = " + rec);
+ 		LOGGER.info("FMeasure = " + fmeasure);
+ 		
+ 		/* Keep for preferred visualization
+ 		System.out.println("Results: "+ scoreAndLabels.count());
+ 		System.out.println(scoreAndLabels.collect().toString());
+ 		System.out.println("Precission = " + pre);
+ 		System.out.println("Recall = " + rec);
+ 		System.out.println("FMeasure = " + fmeasure);*/
 	}
 }

@@ -75,7 +75,7 @@ public class Annotator {
         return frames;
 	}
 	
-	public String annotateBothToString(String text){
+	public static String annotateBothToString(String text){
 		StringBuilder sb = new StringBuilder();
     	sb.append(StanfordUtils.lemmatizeArticle(text));
     	Annotator a = new Annotator();
