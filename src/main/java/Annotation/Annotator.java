@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -20,7 +21,9 @@ import org.slf4j.LoggerFactory;
 
 import Annotation.FramenetParser;
 import Preprocessing.SentenceSplitter;
+import Preprocessing.StanfordUtils;
 import models.dbpedia.SpotlightAnnotation;
+import models.dbpedia.SpotlightResource;
 import models.framenet.Frame;
 /**
  * Class for annotating given texts with spotlight and semviz
@@ -47,13 +50,13 @@ public class Annotator {
         	this.urlSpotlight = prop.getProperty("urlSpotlight");
     	}
     	if(prop.getProperty("modelPath") != null){
-        	this.urlSemviz=prop.getProperty("urlSemViz");
+        	this.urlSemviz=prop.getProperty("urlSemviz");
     	}
     }
     
 	public SpotlightAnnotation annotateSpotlight(String text){
-        SpotlightAnnotator spotlightAnnotator = new SpotlightAnnotator(urlSpotlight);
-        SpotlightAnnotation annotation = spotlightAnnotator.annotate(text, SUPPORT_THRESHOLD, CONFIDENCE_THRESHOLD);
+        SpotlightAnnotator spotlightAnnotator = new SpotlightAnnotator();
+        SpotlightAnnotation annotation = spotlightAnnotator.annotate(text, SUPPORT_THRESHOLD, CONFIDENCE_THRESHOLD, urlSpotlight);
         return annotation;
 	}
 	
@@ -70,6 +73,31 @@ public class Annotator {
             }          
         });
         return frames;
+	}
+	
+	public String annotateBothToString(String text){
+		StringBuilder sb = new StringBuilder();
+    	sb.append(StanfordUtils.lemmatizeArticle(text));
+    	Annotator a = new Annotator();
+    	sb.append(" ");
+    	for(Frame frame : a.annotateFrames(text)){
+    		sb.append(frame.getTarget().getName());
+    		sb.append(" ");
+    	}
+    	HashSet<String> set = new HashSet<>();
+    	for(SpotlightResource r : a.annotateSpotlight(text).getResources()){
+    		for(String s : r.getTypesString().split(",")){
+    			String[] type = s.split(":");
+    			if(type.length > 1){
+    				set.add(s.split(":")[1]);
+    			}
+    		}
+    	}
+    	for(String rawType : set){
+    		sb.append(rawType);	    	
+    		sb.append(" ");
+    	}
+    	return sb.toString();
 	}
 	
 	private String getFramenetAnnotation(String text) throws IOException, URISyntaxException {

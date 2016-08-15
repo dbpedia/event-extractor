@@ -12,10 +12,10 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.spark.streaming.api.java.JavaDStream;
-
 import models.dbpedia.SpotlightAnnotation;
 import models.dbpedia.SpotlightResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -25,38 +25,12 @@ import java.util.List;
 
 /**
  * Created by wojlukas on 2/1/16.
+ * Adjusted by Vincent Bohlen (vincent.bohlen@fu-berlin.de)
  */
 public class SpotlightAnnotator {
+    private final Logger LOGGER = LoggerFactory.getLogger(SpotlightAnnotator.class);
 
-    private String endpointUrl;
-
-    public SpotlightAnnotator(String endpointUrl) {
-        this.endpointUrl = endpointUrl;
-    }
-
-    public JavaDStream<SpotlightAnnotation> annotateDStream (JavaDStream<String> Stream,  final int supportThreshold, final double confidenceThreshold)
-    {
-        JavaDStream<SpotlightAnnotation> AnnotatedStream = Stream.transform(rdd -> rdd.map(str -> {
-            SpotlightAnnotation sA = annotate(str, supportThreshold, confidenceThreshold);
-            return sA;}));
-
-                return AnnotatedStream;
-    }
-
-    public JavaDStream<List<SpotlightResource>> getResourceStream(JavaDStream<SpotlightAnnotation> annotatedStream) {
-
-        JavaDStream<List<SpotlightResource>> ResourceStreamList = annotatedStream.transform(rdd -> rdd.map(sA ->
-                {
-                    List<SpotlightResource> sR = sA.getResources();
-                    return sR;
-                }
-        ));
-
-        return ResourceStreamList;
-    }
-
-
-    public SpotlightAnnotation annotate(String text, int supportThreshold, double confidenceThreshold)
+    public SpotlightAnnotation annotate(String text, int supportThreshold, double confidenceThreshold, String endpointUrl)
     {
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost post = new HttpPost(endpointUrl);
@@ -72,7 +46,7 @@ public class SpotlightAnnotator {
         try {
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+           LOGGER.error(e.getMessage());
         }
         post.setHeader("Accept", "application/json");
         post.setHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
@@ -81,18 +55,15 @@ public class SpotlightAnnotator {
         try {
             response = client.execute(post);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
             return null;
         }
 
         String jsonText = null;
         try {
             jsonText = IOUtils.toString(response.getEntity().getContent(), "UTF-8").trim();
-//            System.out.println("=================");
-//            System.out.println(jsonText);
-//            System.out.println("=================");
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
 
         boolean testJson = true;
@@ -103,11 +74,7 @@ public class SpotlightAnnotator {
         }
         catch (JSONException e)
         {
-            e.printStackTrace();
-            System.err.println("===================");
-            System.err.println(text);
-            System.err.println(jsonText);
-            System.err.println("===================");
+            LOGGER.error(e.getMessage());
             testJson = false;
         }
 
@@ -117,8 +84,7 @@ public class SpotlightAnnotator {
                 result = parseJsonResponseObject(json);
             }
             catch (JSONException e) {
-                e.printStackTrace();
-                System.err.println(jsonText);
+                LOGGER.error(e.getMessage());
             }
         }
 
