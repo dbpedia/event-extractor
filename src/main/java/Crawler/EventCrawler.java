@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import models.Tree;
 /**
  * Class to crawl wikipedia Event Categories for texts. Used to gather training material. 
+ * Very dependend on the blacklist and combine files, because of the mess, wikipedia's event categories are.
+ * Therefore hardly useful.
  * @author Vincent Bohlen (vincent.bohlen@fu-berlin.de)
  *
  */
@@ -77,7 +79,7 @@ public class EventCrawler implements Serializable{
 		while(!toVisit.isEmpty()){
 			models.Tree first = toVisit.getFirst();
 			if((Document)first.getData() != null && !visited.contains(((Document)first.getData()).getTitle()) && first.getData() != null && !blackList.contains(((Document)first.getData()).getTitle())){
-				System.out.println("Queuesize: "+toVisit.size()+", Visiting: " +((Document)toVisit.getFirst().getData()).getTitle());
+				LOGGER.info("Queuesize: "+toVisit.size()+", Visiting: " +((Document)toVisit.getFirst().getData()).getTitle());
 				try {
 					if(!categoryTree && combineList.contains(((Document)first.getData()).getTitle())){
 						category = true;
@@ -88,8 +90,7 @@ public class EventCrawler implements Serializable{
 						process(((Document)first.getData()).getUrl(),first, categoryTree);				
 					}
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOGGER.error(e.getMessage().toString());
 				}
 			}
 			if(first.getData() != null){
@@ -103,7 +104,6 @@ public class EventCrawler implements Serializable{
 		while(!toVisitCategory.isEmpty()){
 			models.Tree first = toVisitCategory.getFirst();
 			if(first.getData() != null && !visited.contains(((Document)first.getData()).getTitle()) && first.getData() != null && !blackList.contains(((Document)first.getData()).getTitle())){
-				System.out.println("Category-Queuesize: "+toVisitCategory.size()+", Visiting: " +((Document)toVisitCategory.getFirst().getData()).getTitle());
 				try {
 					process(((Document)first.getData()).getUrl(), parent, false);					
 				} catch (Exception e) {
@@ -183,12 +183,11 @@ public class EventCrawler implements Serializable{
 			    }
 		    }
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error(e.getMessage().toString());
 		} catch (FileNotFoundException e) {
 			//usually wikimedia links. unusable.
 		} catch (IOException e) {
-			LOGGER.error(e.getStackTrace().toString());
+			LOGGER.error(e.getMessage().toString());
 		}
 	    return result.toString();
 	}
@@ -201,22 +200,4 @@ public class EventCrawler implements Serializable{
 	public void getDocumentsByType(){
 	
 	}
-//	public void crawl(){
-//	while(!toVisit.isEmpty() && crawlDepth > 0){
-//		models.Tree first = toVisit.getFirst();
-//		if(!visited.contains(first) && first.getData() != null && !blacklist.contains(((Document)first.getData()).getTitle())){
-//			System.out.println("Queuesize: "+toVisit.size()+", Visiting: " +((Document)toVisit.getFirst().getData()).getTitle());
-//			first.addNode();
-//			try {
-//				process(((Document)first.getData()).getUrl(), first);					
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			crawlDepth--;
-//		}
-//		visited.add(first);
-//		toVisit.removeFirst();
-//	}
-//}
 }
