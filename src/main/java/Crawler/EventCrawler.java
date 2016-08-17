@@ -54,7 +54,7 @@ public class EventCrawler implements Serializable{
 		initializeCombineList();
 	}
 	private final void initializeBlackList() {
-		try(BufferedReader br = new BufferedReader(new FileReader(getClass().getClassLoader().getResource("blacklist.txt").getFile()))){
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("blacklist.txt")))){
 	    	String line = br.readLine();
 	    	while (line != null) {
 	    		blackList.add(line);
@@ -65,7 +65,7 @@ public class EventCrawler implements Serializable{
 		}
 	}
 	private final void initializeCombineList() {
-		try(BufferedReader br = new BufferedReader(new FileReader(getClass().getClassLoader().getResource("combine.txt").getFile()))){
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("combine.txt")))){
 	    	String line = br.readLine();
 	    	while (line != null) {
 	    		combineList.add(line);

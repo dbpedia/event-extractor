@@ -39,10 +39,8 @@ public class Annotator {
     
     public Annotator(){
     	Properties prop = new Properties();
-    	try(FileInputStream input = new FileInputStream(getClass().getClassLoader().getResource("config.properties").getFile())){
-    		prop.load(input);
-    	} catch (FileNotFoundException e) {
-    		LOGGER.error(e.getStackTrace().toString());
+    	try{
+    		prop.load(getClass().getClassLoader().getResourceAsStream("config.properties"));
 		} catch (IOException e) {
 			LOGGER.error(e.getStackTrace().toString());
 		}

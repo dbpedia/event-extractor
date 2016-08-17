@@ -43,12 +43,11 @@ public class MainWorkflow implements Serializable{
     
     public MainWorkflow(){
     	Properties prop = new Properties();
-    	try(FileInputStream input = new FileInputStream(getClass().getClassLoader().getResource("config.properties").getFile())){
-    		prop.load(input);
-    	} catch (FileNotFoundException e) {
-    		LOGGER.error(e.getStackTrace().toString());
+    	try {
+			prop.load(getClass().getClassLoader().getResourceAsStream("config.properties"));
 		} catch (IOException e) {
-			LOGGER.error(e.getStackTrace().toString());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
     	if(prop.getProperty("sparkCores") != null){
         	this.sparkCores = new Integer(prop.getProperty("sparkCores"));
@@ -234,8 +233,8 @@ public class MainWorkflow implements Serializable{
 
 	public static void main(String[] args) {
         MainWorkflow mw = new MainWorkflow();
-        mw.train(true);
-        String classs = mw.classify("A 1,500-acre wildfire raged near Pilot Rock Conservation Camp above Silverwood Lake on Sunday, fire officials said.");
+        //mw.train(true);
+        String classs = mw.classify("test");
         System.out.println(classs);
 	}
 	

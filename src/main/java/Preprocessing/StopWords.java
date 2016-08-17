@@ -1,19 +1,29 @@
 package Preprocessing;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import Main.MainWorkflow;
 /**
  * Created by wojlukas
+ * Adjusted by Vincent Bohlen (vincent.bohlen@fu-berlin.de)
  */
 public class StopWords {
 	
 	private static HashSet<String> stopWords = new HashSet<String>();
-	
+    private final Logger LOGGER = LoggerFactory.getLogger(StopWords.class);
+
 	private static final Pattern UNDESIRABLES = Pattern.compile("[\\]\\[(){},.;!?<>%]");
 
 	public String removePunctuation(String x) {
@@ -21,13 +31,12 @@ public class StopWords {
 	}
 
 	public StopWords() {
-		stopWords.addAll(readFromCSV(getClass().getClassLoader().getResource("stopwords-net.csv").getFile()));
-		stopWords.addAll(readFromCSV(getClass().getClassLoader().getResource("stopwords-dvita.csv").getFile()));
+		stopWords.addAll(readFromCSV(getClass().getClassLoader().getResourceAsStream("stopwords-net.csv")));
+		stopWords.addAll(readFromCSV(getClass().getClassLoader().getResourceAsStream("stopwords-dvita.csv")));
 	}
 
 	public StopWords(String fileName) {
-		try {
-			BufferedReader bufferedreader = new BufferedReader(new FileReader(fileName));
+		try(BufferedReader bufferedreader = new BufferedReader(new FileReader(fileName))){
 			while (bufferedreader.ready()) {
 				stopWords.add(bufferedreader.readLine());
 			}
@@ -40,19 +49,17 @@ public class StopWords {
 		stopWords.add(word);
 	}
 
-	public List<String> readFromCSV(String fileName){
+	public List<String> readFromCSV(InputStream fileName){
         List<String> words = new ArrayList<String>();
-
-        try {
-            Files.lines(Paths.get(fileName))
-                .filter(line -> line.length() > 1)
-                .forEach(line -> {
-                    words.add(line.split(",")[0]);
-                });
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(fileName))){
+        	String line = br.readLine();
+        	while (line != null) {
+        		words.add(line.split(",")[0]);
+        		line = br.readLine();
+        	}
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        	LOGGER.error(e.getMessage());
+		}
 		return words;
 	}
 
