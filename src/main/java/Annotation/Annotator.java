@@ -78,8 +78,12 @@ public class Annotator {
     	sb.append(StanfordUtils.lemmatizeArticle(text));
     	Annotator a = new Annotator();
     	sb.append(" ");
+    	HashSet<String> hs = new HashSet<String>();
     	for(Frame frame : a.annotateFrames(text)){
-    		sb.append(frame.getTarget().getName());
+    		hs.add(frame.getTarget().getName());
+    	}
+    	for(String fr : hs){
+    		sb.append(fr);
     		sb.append(" ");
     	}
     	HashSet<String> set = new HashSet<>();
