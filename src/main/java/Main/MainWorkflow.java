@@ -2,7 +2,6 @@ package Main;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;	
@@ -233,8 +232,8 @@ public class MainWorkflow implements Serializable{
 
 	public static void main(String[] args) {
         MainWorkflow mw = new MainWorkflow();
-        //mw.train(true);
-        String classs = mw.classify("test");
+       // mw.train(true);
+        String classs = mw.classify("Fast-moving wildfire near Big Sur spreads as more people are evacuated.");
         System.out.println(classs);
 	}
 	

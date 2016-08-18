@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import Annotation.Annotator;
 import Preprocessing.StanfordUtils;
 import models.Document;
-import models.framenet.Frame;
 /**
  * Class to handle the preprocessing and training
  * @author Vincent Bohlen (vincent.bohlen@fu-berlin.de)
