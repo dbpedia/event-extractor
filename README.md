@@ -22,7 +22,7 @@ See Example texts for easy testing.
 
 * Extract model and/or training material
 
-* Change /src/main/resources so that modelPath and/or trainExamplesPath match you local path
+* Change /src/main/resources/config.properties so that modelPath and/or trainExamplesPath match you local path
 
 * The main class is in MainWorklow.java
 
