@@ -3,6 +3,7 @@
 ## Introduction
 
 Repository for the DBpedia GSoC Hybrid Classifier/Rule-based Event Extractor Project
+
 This git was solely used by the student Vincent Bohlen (@s0taka). All commits were made by me. The code and the [weekly reports](https://github.com/dbpedia/event-extractor/wiki/Weekly-Reports) document the work I have done.
 
 The project consists of two major parts: The MainWorkflow class, which coordinates training, classifying, etc. and the LearningWorkflow, which coordinates preprocessing and learning of the model.
@@ -10,7 +11,9 @@ Furthermore the project consists of a Crawler for gathering training material fr
 , preprocessing and helper classes.
 
 A demo is available via: http://dbpedia.imp.fu-berlin.de:32811/EventClassifier/demo/index.html
+
 See Example texts for easy testing.
+
 (The computation is slow because of Apache Spark overhead and the slow semViz instance used.)
 
 ## How To Use The Code
