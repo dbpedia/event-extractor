@@ -41,13 +41,17 @@ One persistent thunderstorm produced five of the tornado touchdowns. The first t
 
 * A minibus was hit by a train and killed four people in Anenii Noi District, Moldova.
 
+* Three men face first looting charges in Milwaukee riots for 'breaking into liquor store'.
+
+* Several police officers and at least one observer have been injured in violent protests in Milwaukee since Saturday night, when 23-year-old Sylville Smith was killed by police.
+
 ## Future Work: 
 
 * The model needs further training. Right now it is only able to classify the five Events: Tornado, Flood, Wildfire Traffic, Riot and Earthquake. This is due to the sparsity of other natural disaster categories on Wikipedia. 
 
 * Implementation of hierarchical classification may further improve precision.
 
-* The classifier has no access to possibilities and will therefore show a result, even though no event is present. Need to find a way to omit showing results if possibility falls below a threshold. Maybe with Spark ML's OneVsRest class?
+* The classifier has no access to possibilities and will therefore show a result, even though no event is present. Need to find a way to omit showing results if possibility falls below a threshold. Maybe by accessing the models directly via Spark ML's OneVsRest class?
 
 * The system should be migrated to a real spark cluster to reduce overhead.
 
