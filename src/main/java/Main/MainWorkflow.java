@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
@@ -35,7 +36,7 @@ public class MainWorkflow implements Serializable{
     private final Logger LOGGER = LoggerFactory.getLogger(MainWorkflow.class);
     private JavaRDD<Document> testDocRDD;
     private Integer sparkCores;
-    private Integer trainSetSize;
+    private Integer trainSetSize = 0;
     private String modelPath;
     private String trainExamplesPath;
     private HashMap<Double,String> types = new HashMap<Double,String>();
@@ -194,10 +195,14 @@ public class MainWorkflow implements Serializable{
 	 * @throws IOException
 	 */
 	private List<String> readMultiClassDocuments(File path, List<String> train) throws FileNotFoundException, IOException {
-		
-		trainSetSize = path.listFiles().length;
-		for(int i=0; i < trainSetSize ; i++){
-			try(BufferedReader br = new BufferedReader(new FileReader(path.listFiles()[i]))){
+		if(trainSetSize == 0){
+			trainSetSize = path.listFiles().length;
+		}
+		int exampleCount = trainSetSize < path.listFiles().length ?  trainSetSize : path.listFiles().length;
+		System.out.println(exampleCount);
+		for(int i=0; i < exampleCount ; i++){
+			Random rnd = new Random();
+			try(BufferedReader br = new BufferedReader(new FileReader(path.listFiles()[rnd.nextInt(exampleCount)]))){
 	    		train.add(br.readLine());
 			}
 		}
@@ -232,8 +237,8 @@ public class MainWorkflow implements Serializable{
 
 	public static void main(String[] args) {
         MainWorkflow mw = new MainWorkflow();
-       // mw.train(true);
-        String classs = mw.classify("Fast-moving wildfire near Big Sur spreads as more people are evacuated.");
+        mw.train(false);
+        String classs = mw.classify("The preliminary, unofficial storm reports indicate six locations of tornado touchdowns on August 20, 2016. One persistent thunderstorm produced five of the tornado touchdowns. The first tornado touchdown took place at 1:15 p.m. at Bangor in Van Buren County.");
         System.out.println(classs);
 	}
 	
