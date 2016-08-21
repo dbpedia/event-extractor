@@ -199,7 +199,6 @@ public class MainWorkflow implements Serializable{
 			trainSetSize = path.listFiles().length;
 		}
 		int exampleCount = trainSetSize < path.listFiles().length ?  trainSetSize : path.listFiles().length;
-		System.out.println(exampleCount);
 		for(int i=0; i < exampleCount ; i++){
 			Random rnd = new Random();
 			try(BufferedReader br = new BufferedReader(new FileReader(path.listFiles()[rnd.nextInt(exampleCount)]))){
@@ -237,8 +236,8 @@ public class MainWorkflow implements Serializable{
 
 	public static void main(String[] args) {
         MainWorkflow mw = new MainWorkflow();
-        mw.train(false);
-        String classs = mw.classify("The preliminary, unofficial storm reports indicate six locations of tornado touchdowns on August 20, 2016. One persistent thunderstorm produced five of the tornado touchdowns. The first tornado touchdown took place at 1:15 p.m. at Bangor in Van Buren County.");
+        mw.train(true);
+        String classs = mw.classify("A minibus was hit by a train and killed four people in Anenii Noi District, Moldova.");
         System.out.println(classs);
 	}
 	
