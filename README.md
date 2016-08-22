@@ -32,11 +32,9 @@ See [Example texts](#example) for easy testing.
 
 ## Examples texts:<a name="example"></a>
 
-* A magnitude 6 earthquake struck off the east coast of Japan in the early hours of Sunday, the US Geological Survey reported. The quake’s epicentre was offshore, 192km (120 miles) east of Hachinohe, Honshu island at a depth of 10km.
+* More than a week after a storm flooded much of central Louisiana, killing 13, more than 86,000 have applied for assistance from the Federal Emergency Management Agency. About 4,000 were still in shelters. Residents returning to their homes — or those who never left, choosing to ride out the storm — were struggling to survive. Leblanc and about two dozen others in what Cajuns call “Pont Breaux,” about 50 miles west of Baton Rouge, must still be ferried home through rank, alligator-infested floodwaters by tractors, off-road vehicles and boats.
 
-* At least 13 people died in the flooding that swept through parts of southern Louisiana after torrential rains lashed the region. An estimated 60,000 homes have been damaged, and 102,000 people have registered for federal assistance so far.
-
-* At least 96 homes and more than 200 other structures—sheds, barns and garages—have been destroyed by a large wildfire east of Los Angeles, fire officials said on Friday. The so-called Blue Cut fire was still churning through the high desert and mountain communities of southern California on Friday, though firefighters made some progress overnight, helped by cooler weather and higher humidity. The 37,000-acre fire is now 26% contained, fire officials said.
+* The San Gabriel Complex Fire is a wildfire that is burning in the Angeles National Forest, Los Angeles County. The fire is the combination of two separate fires, the Reservoir Fire and the Fish Fire.
 
 * The preliminary, unofficial storm reports indicate six locations of tornado touchdowns on August 20, 2016.
 One persistent thunderstorm produced five of the tornado touchdowns. The first tornado touchdown took place at 1:15 p.m. at Bangor in Van Buren County.
@@ -44,8 +42,6 @@ One persistent thunderstorm produced five of the tornado touchdowns. The first t
 * Six people injured in area traffic accidents.
 
 * A minibus was hit by a train and killed four people in Anenii Noi District, Moldova.
-
-* Three men face first looting charges in Milwaukee riots for 'breaking into liquor store'.
 
 * Several police officers and at least one observer have been injured in violent protests in Milwaukee since Saturday night, when 23-year-old Sylville Smith was killed by police.
 
