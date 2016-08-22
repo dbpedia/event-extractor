@@ -67,7 +67,7 @@ public class MainWorkflow implements Serializable{
      * Method to setup the Spark configuration
      * @return the resulting SparkConf
      */
-    private SparkConf setUpSparkConf(){
+    public SparkConf setUpSparkConf(){
         SparkConf sparkConf = new SparkConf();
         sparkConf.setMaster("local[" + sparkCores +"]");
         sparkConf.setAppName("EEx");
@@ -78,19 +78,20 @@ public class MainWorkflow implements Serializable{
 	 * Method to classify a given text
 	 * @param text the text to classify
 	 */
-	public String classify(String text){	
+	public String classify(String text, JavaSparkContext sc){	
 		IDFModel idf = (IDFModel)Serializer.deserialize(modelPath+"idf.ser"); 
 		types = (HashMap<Double,String>)Serializer.deserialize(modelPath+"types.ser");
 		Document d = createDocument(text, -1);
 		LinkedList<Document> l = new LinkedList<Document>();
 		l.add(d);
 		Double prediction;
-		try(JavaSparkContext sc = new JavaSparkContext(setUpSparkConf())){
-			LogisticRegressionModel logRegModel = LogisticRegressionModel.load(JavaSparkContext.toSparkContext(sc), modelPath+"logRegModel");
-			LearningWorkflow lw = new LearningWorkflow(sc);
-			JavaRDD<LabeledPoint> lp = lw.preprocess(sc.parallelize(l), idf, false);
-			prediction = logRegModel.predict(lp.collect().get(0).features());
+		if(sc == null){
+			sc = new JavaSparkContext(setUpSparkConf());
 		}
+		LogisticRegressionModel logRegModel = LogisticRegressionModel.load(JavaSparkContext.toSparkContext(sc), modelPath+"logRegModel");
+		LearningWorkflow lw = new LearningWorkflow(sc);
+		JavaRDD<LabeledPoint> lp = lw.preprocess(sc.parallelize(l), idf, false);
+		prediction = logRegModel.predict(lp.collect().get(0).features());
 		return types.get(prediction).get();
 	}
 	
@@ -179,11 +180,6 @@ public class MainWorkflow implements Serializable{
 		if(label != -1){
 			d.setLabel(label);
 		}
-		else{
-			Annotator anno = new Annotator(); 
-			d.setFrames(anno.annotateFrames(text));
-			d.setAnnotation(anno.annotateSpotlight(text));
-		}
        	return d;
 	}
 	
@@ -236,8 +232,8 @@ public class MainWorkflow implements Serializable{
 
 	public static void main(String[] args) {
         MainWorkflow mw = new MainWorkflow();
-        mw.train(true);
-        String classs = mw.classify("A minibus was hit by a train and killed four people in Anenii Noi District, Moldova.");
+        mw.train(false);
+        String classs = mw.classify("At least 13 people died in the flooding that swept through parts of southern Louisiana after torrential rains lashed the region. An estimated 60,000 homes have been damaged, and 102,000 people have registered for federal assistance so far.", null);
         System.out.println(classs);
 	}
 	

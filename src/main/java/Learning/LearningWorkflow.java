@@ -73,10 +73,7 @@ public class LearningWorkflow{
         //Preprocessing
     	JavaRDD<Document> preprocessedDocuments = null;
     	if(training){
-    	preprocessedDocuments = docs.map(f -> {
-    		f.setText(StanfordUtils.lemmatizeArticle(f.getText()));
-    		return f;
-    		});
+    	preprocessedDocuments = docs;
     	}
     	else{	
     		preprocessedDocuments = docs.map(f -> {
