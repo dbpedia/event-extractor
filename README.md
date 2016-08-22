@@ -12,7 +12,7 @@ Furthermore the project consists of a Crawler for gathering training material fr
 
 A demo is available via: http://dbpedia.imp.fu-berlin.de:32811/EventClassifier/demo/index.html
 
-See Example texts for easy testing.
+See [Example texts](#example) for easy testing.
 
 (The computation is slow because of Apache Spark overhead and the slow semViz instance used.)
 
@@ -30,7 +30,7 @@ See Example texts for easy testing.
 
 * comment/uncomment the train() statement to only classify or train and classify
 
-## Examples texts:
+## Examples texts:<a name="example"></a>
 
 * A magnitude 6 earthquake struck off the east coast of Japan in the early hours of Sunday, the US Geological Survey reported. The quake’s epicentre was offshore, 192km (120 miles) east of Hachinohe, Honshu island at a depth of 10km.
 
