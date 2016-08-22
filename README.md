@@ -22,7 +22,7 @@ See [Example texts](#example) for easy testing.
 
 * Extract model and/or training material
 
-* Change /src/main/resources/config.properties so that modelPath and/or trainExamplesPath match you local path
+* Change /src/main/resources/config.properties so that modelPath and/or trainExamplesPath match your local path
 
 * The main class is in MainWorklow.java
 
@@ -51,7 +51,7 @@ One persistent thunderstorm produced five of the tornado touchdowns. The first t
 
 ## Future Work: 
 
-* The model needs further training. Right now it is only able to classify the five Events: Tornado, Flood, Wildfire Traffic, Riot and Earthquake. This is due to the sparsity of other natural disaster categories on Wikipedia. 
+* The model needs further training. Right now it is only able to classify the five Events: Tornado, Flood, Wildfire, Traffic Accident, Riot and Earthquake. This is due to the sparsity of other natural disaster categories on Wikipedia. 
 
 * Implementation of hierarchical classification may further improve precision.
 
