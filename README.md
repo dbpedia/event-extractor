@@ -10,7 +10,11 @@ The project consists of two major parts: The MainWorkflow class, which coordinat
 Furthermore the project consists of a Crawler for gathering training material from wikipedia and a lot of annotation
 , preprocessing and helper classes.
 
-A demo is available via: http://dbpedia.imp.fu-berlin.de:32811/EventClassifier/demo/index.html
+A rest service is available via: http://dbpedia.imp.fu-berlin.de:32811/EventClassifier/rest/event?text=
+
+example call: http://dbpedia.imp.fu-berlin.de:32811/EventClassifier/rest/event?text=More%20than%20a%20week%20after%20a%20storm%20flooded%20much%20of%20central%20Louisiana,%20killing%2013,%20more%20than%2086,000%20have%20applied%20for%20assistance%20from%20the%20Federal%20Emergency%20Management%20Agency.%20About%204,000%20were%20still%20in%20shelters.%20Residents%20returning%20to%20their%20homes%20%E2%80%94%20or%20those%20who%20never%20left,%20choosing%20to%20ride%20out%20the%20storm%20%E2%80%94%20were%20struggling%20to%20survive.%20Leblanc%20and%20about%20two%20dozen%20others%20in%20what%20Cajuns%20call%20%E2%80%9CPont%20Breaux,%E2%80%9D%20about%2050%20miles%20west%20of%20Baton%20Rouge,%20must%20still%20be%20ferried%20home%20through%20rank,%20alligator-infested%20floodwaters%20by%20tractors,%20off-road%20vehicles%20and%20boats.
+
+A visual demo is available via: http://dbpedia.imp.fu-berlin.de:32811/EventClassifier/demo/index.html
 
 See [Example texts](#example) for easy testing.
 
